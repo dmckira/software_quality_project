@@ -88,7 +88,7 @@ pipeline {
                 // TODO 6: Espera el resultado del Quality Gate de SonarQube
                 // Pista: usa timeout y waitForQualityGate abortPipeline: true
                 echo "TODO: verificar Quality Gate"
-                timeout(time: 5, unit: "MINUTES") {
+                timeout(time: 15, unit: "MINUTES") {
                     waitForQualityGate abortPipeline: true
                 }
             }
