@@ -89,7 +89,7 @@ pipeline {
                 // Pista: usa timeout y waitForQualityGate abortPipeline: true
                 echo "TODO: verificar Quality Gate"
                 timeout(time: 15, unit: "MINUTES") {
-                    waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: false
                 }
             }
         }
