@@ -107,11 +107,17 @@ pipeline {
 
     post {
         // TODO 7: Completa el bloque post con:
-        //   always   — mensaje de estado del pipeline
-        //   success  — mensaje de build exitoso
-        //   failure  — mensaje de fallo con URL de SonarQube
         always {
             echo "Pipeline finalizado: ${currentBuild.currentResult}"
+        }
+         success {
+        echo "Build exitoso — ${APP_NAME} superó todas las etapas correctamente."
+        }
+        always {
+            echo "Pipeline finalizado: ${currentBuild.currentResult}"
+        }
+        failure {
+        echo "Build fallido — revisa el análisis en ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
         }
     }
 }

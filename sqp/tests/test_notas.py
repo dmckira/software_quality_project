@@ -144,3 +144,97 @@ class TestEstadisticasGlobales:
 #  6. test_reporte_con_notas_mixtas:
 #     Registra notas aprobadas y reprobadas y verifica los conteos.
 # ─────────────────────────────────────────────────────────────
+
+
+class TestCalcularPromedioEstudiante:
+
+    def test_division_por_cero_promedio_estudiante(self):
+        """Documenta la deuda técnica: sin notas debería retornar 0.0, no lanzar ZeroDivisionError."""
+        from src.models.database import get_estudiantes
+        get_estudiantes()["E001"] = {
+            "codigo": "E001", "nombre": "Ana", "email": "a@t.com",
+            "semestre": 1, "activo": True
+        }
+        # Si el bug persiste, el test lo expone; si fue corregido, valida el fix.
+        try:
+            resultado = calcular_promedio_estudiante("E001")
+            assert resultado == 0.0, "Comportamiento corregido: debe retornar 0.0 sin notas"
+        except ZeroDivisionError:
+            pytest.fail(
+                "calcular_promedio_estudiante lanza ZeroDivisionError cuando no hay notas. "
+                "Debe retornar 0.0 en su lugar."
+            )
+
+
+class TestEndpointsNotas:
+
+    def test_notas_de_estudiante_endpoint(self, setup_datos):
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001",
+            "codigo_materia": "CS101",
+            "actividad": "Parcial 1",
+            "valor": 4.0
+        })
+        response = client.get("/notas/estudiante/E001")
+        assert response.status_code == 200
+        notas = response.json()
+        assert len(notas) == 1
+        assert notas[0]["valor"] == 4.0
+
+    def test_promedio_estudiante_endpoint(self, setup_datos):
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001", "codigo_materia": "CS101",
+            "actividad": "Parcial 1", "valor": 3.5
+        })
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001", "codigo_materia": "CS101",
+            "actividad": "Parcial 2", "valor": 4.5
+        })
+        response = client.get("/notas/promedio/estudiante/E001")
+        assert response.status_code == 200
+        assert response.json()["promedio"] == pytest.approx(4.0)
+
+    def test_promedio_materia_endpoint(self, setup_datos):
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001", "codigo_materia": "CS101",
+            "actividad": "Parcial 1", "valor": 3.0
+        })
+        response = client.get("/notas/promedio/materia/CS101")
+        assert response.status_code == 200
+        assert response.json()["promedio"] == pytest.approx(3.0)
+
+
+class TestEstadisticasConDatos:
+
+    def test_estadisticas_con_datos(self, setup_datos):
+        # Segundo estudiante
+        client.post("/estudiantes/", json={
+            "codigo": "E002", "nombre": "Pedro López",
+            "email": "pedro@test.com", "semestre": 3
+        })
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001", "codigo_materia": "CS101",
+            "actividad": "Parcial", "valor": 4.0
+        })
+        client.post("/notas/", json={
+            "codigo_estudiante": "E002", "codigo_materia": "CS101",
+            "actividad": "Parcial", "valor": 2.0
+        })
+        stats = estadisticas_globales()
+        assert stats["total_estudiantes"] == 2
+        assert stats["promedio_global"] == pytest.approx(3.0)
+
+    def test_reporte_con_notas_mixtas(self, setup_datos):
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001", "codigo_materia": "CS101",
+            "actividad": "Aprobada", "valor": 4.0          # aprobado
+        })
+        client.post("/notas/", json={
+            "codigo_estudiante": "E001", "codigo_materia": "CS101",
+            "actividad": "Reprobada", "valor": 2.0         # reprobado
+        })
+        resultado = reporte_academico("E001")
+        assert resultado["total_notas"] == 2
+        assert resultado["aprobadas"] == 1
+        assert resultado["reprobadas"] == 1
+        assert resultado["promedio"] == pytest.approx(3.0)
