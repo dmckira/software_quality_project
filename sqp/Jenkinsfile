@@ -13,7 +13,7 @@ pipeline {
          SONAR_PROJECT_KEY  = "software-quality-project"         // clave del proyecto en SonarQube
          SONAR_PROJECT_NAME = "software-quality-project"         // nombre visible en SonarQube
          SONAR_HOST_URL     = "http://sonarqube:9000"         // URL del contenedor SonarQube
-         COVERAGE_THRESHOLD = "60"         // umbral mínimo de cobertura (sugerido: 60)
+         COVERAGE_THRESHOLD = "85"         // umbral mínimo de cobertura (sugerido: 60)
          REPORTS_DIR        = "sqp/reports"         // carpeta de reportes
 
         APP_NAME = "software-quality-project"
@@ -89,7 +89,7 @@ pipeline {
                 // Pista: usa timeout y waitForQualityGate abortPipeline: true
                 echo "TODO: verificar Quality Gate"
                 timeout(time: 15, unit: "MINUTES") {
-                    waitForQualityGate abortPipeline: false
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
