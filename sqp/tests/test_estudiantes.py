@@ -102,7 +102,7 @@ class TestEliminarEstudiante:
             "codigo": "E001", "nombre": "Ana", "email": "a@t.com", "semestre": 3
         })
         response = client.delete("/estudiantes/E001")
-        assert response.status_code == 200
+        assert response.status_code == 204
         # Verificar que ya no existe
         assert client.get("/estudiantes/E001").status_code == 404
 
@@ -117,7 +117,7 @@ class TestDesactivarEstudiante:
         client.post("/estudiantes/", json={
             "codigo": "E001", "nombre": "Ana", "email": "a@t.com", "semestre": 3
         })
-        response = client.patch("/estudiantes/E001/desactivar")
+        response = client.put("/estudiantes/E001/desactivar")
         assert response.status_code == 200
         assert response.json()["activo"] is False
 

@@ -28,7 +28,7 @@ def calcular_promedio_estudiante(codigo: str) -> float:
     notas = [n for n in get_notas() if n["codigo_estudiante"] == codigo.upper()]
     total = sum(n["valor"] for n in notas)
     # [DEUDA] ZeroDivisionError si notas está vacío
-    return round(total / len(notas), 2)
+    return round(total / len(notas), 2) if notas else 0.0
 
 
 def calcular_promedio_materia(codigo: str) -> float:
@@ -41,7 +41,7 @@ def calcular_promedio_materia(codigo: str) -> float:
     notas = [n for n in get_notas() if n["codigo_materia"] == codigo.upper()]
     total = sum(n["valor"] for n in notas)
     # [DEUDA] ZeroDivisionError si notas está vacío
-    return round(total / len(notas), 2)
+    return round(total / len(notas), 2) if notas else 0.0
 
 
 def reporte_academico(codigo_estudiante: str) -> dict:
