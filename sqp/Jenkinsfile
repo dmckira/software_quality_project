@@ -113,9 +113,6 @@ pipeline {
          success {
         echo "Build exitoso — ${APP_NAME} superó todas las etapas correctamente."
         }
-        always {
-            echo "Pipeline finalizado: ${currentBuild.currentResult}"
-        }
         failure {
         echo "Build fallido — revisa el análisis en ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
         }
