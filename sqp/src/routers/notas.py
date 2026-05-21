@@ -14,7 +14,7 @@ from src.services.academic_service import (
     reporte_academico, estadisticas_globales, es_aprobado
 )
 
-_ERR_ESTUDIANTE = "Estudiante no encontrado"
+_ERR_ESTUDIANTE = "Estudiante no encontrado"    
 
 router = APIRouter(prefix="/notas", tags=["Notas"])
 
