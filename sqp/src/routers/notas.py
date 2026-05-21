@@ -14,6 +14,8 @@ from src.services.academic_service import (
     reporte_academico, estadisticas_globales, es_aprobado
 )
 
+_ERR_ESTUDIANTE = "Estudiante no encontrado"
+
 router = APIRouter(prefix="/notas", tags=["Notas"])
 
 
@@ -26,7 +28,7 @@ def registrar_nota(nota: NotaCreate):
     codigo_m = nota.codigo_materia.strip().upper()
 
     if codigo_e not in get_estudiantes():
-        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+        raise HTTPException(status_code=404, detail=_ERR_ESTUDIANTE)
 
     if codigo_m not in get_materias():
         raise HTTPException(status_code=404, detail="Materia no encontrada")
@@ -54,7 +56,7 @@ def registrar_nota(nota: NotaCreate):
 def notas_de_estudiante(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_estudiantes():
-        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+        raise HTTPException(status_code=404, detail=_ERR_ESTUDIANTE)
     notas = [n for n in get_notas() if n["codigo_estudiante"] == codigo]
     return notas
 
@@ -76,7 +78,7 @@ def notas_de_materia(codigo: str):
 def promedio_estudiante(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_estudiantes():
-        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+        raise HTTPException(status_code=404, detail=_ERR_ESTUDIANTE)
     # [DEUDA ALTA] Sin manejo de ZeroDivisionError si no hay notas
     promedio = calcular_promedio_estudiante(codigo)
     return {"codigo": codigo, "promedio": promedio}
