@@ -9,7 +9,9 @@ from src.models.database import get_materias
 router = APIRouter(prefix="/materias", tags=["Materias"])
 
 
-@router.post("/", response_model=MateriaResponse, status_code=201)
+@router.post("/", response_model=MateriaResponse, status_code=201, responses={
+        400: {"description": "Codigo duplicado o creditos fuera de rango(1-6)"}
+    })
 def crear_materia(materia: MateriaCreate):
     db = get_materias()
     codigo = materia.codigo.strip().upper()

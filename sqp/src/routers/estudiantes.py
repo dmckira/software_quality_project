@@ -14,7 +14,9 @@ from src.models.database import get_estudiantes
 router = APIRouter(prefix="/estudiantes", tags=["Estudiantes"])
 
 
-@router.post("/", response_model=EstudianteResponse, status_code=201)
+@router.post("/", response_model=EstudianteResponse, status_code=201, responses={
+    400: {"description": "codigo duplicado, email invalido, o el semestra esta fuera del rango (1-10)"}
+})
 def crear_estudiante(estudiante: EstudianteCreate):
     db = get_estudiantes()
     codigo = estudiante.codigo.strip().upper()
@@ -44,7 +46,9 @@ def listar_estudiantes():
     return list(get_estudiantes().values())
 
 
-@router.get("/{codigo}", response_model=EstudianteResponse)
+@router.get("/{codigo}", response_model=EstudianteResponse, responses={
+    404: {"description": "Estudiante no encontrado"}
+})
 def obtener_estudiante(codigo: str):
     db = get_estudiantes()
     codigo = codigo.upper()
@@ -53,7 +57,9 @@ def obtener_estudiante(codigo: str):
     return db[codigo]
 
 
-@router.delete("/{codigo}", status_code=204)
+@router.delete("/{codigo}", status_code=204,  responses={
+    404: {"description": "Estudiante no encontrado"}
+})
 def eliminar_estudiante(codigo: str):
     db = get_estudiantes()
     codigo = codigo.upper()
@@ -62,7 +68,9 @@ def eliminar_estudiante(codigo: str):
     del db[codigo]
 
 
-@router.put("/{codigo}/desactivar", response_model=EstudianteResponse)
+@router.put("/{codigo}/desactivar", response_model=EstudianteResponse, responses={
+    404: {"description": "Estudiante no encontrado"}
+})
 def desactivar_estudiante(codigo: str):
     db = get_estudiantes()
     codigo = codigo.upper()

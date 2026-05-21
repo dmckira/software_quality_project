@@ -17,7 +17,10 @@ from src.services.academic_service import (
 router = APIRouter(prefix="/notas", tags=["Notas"])
 
 
-@router.post("/", response_model=NotaResponse, status_code=201)
+@router.post("/", response_model=NotaResponse, status_code=201, responses={
+    400: {"description": "Valor de nota fuera de rango (0.0–5.0)"},
+    404: {"description": "Estudiante o materia no encontrados"}
+})
 def registrar_nota(nota: NotaCreate):
     codigo_e = nota.codigo_estudiante.strip().upper()
     codigo_m = nota.codigo_materia.strip().upper()
@@ -45,7 +48,9 @@ def registrar_nota(nota: NotaCreate):
     return nueva
 
 
-@router.get("/estudiante/{codigo}")
+@router.get("/estudiante/{codigo}", responses={
+    404: {"description": "Estudiante no encontrado"}
+})
 def notas_de_estudiante(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_estudiantes():
@@ -54,7 +59,9 @@ def notas_de_estudiante(codigo: str):
     return notas
 
 
-@router.get("/materia/{codigo}")
+@router.get("/materia/{codigo}",  responses={
+    404: {"description": "Materia no encontrada"}
+} )
 def notas_de_materia(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_materias():
@@ -63,7 +70,9 @@ def notas_de_materia(codigo: str):
     return notas
 
 
-@router.get("/promedio/estudiante/{codigo}")
+@router.get("/promedio/estudiante/{codigo}", responses={
+    404: {"description": "Estudiante no encontrado"}
+})
 def promedio_estudiante(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_estudiantes():
@@ -73,7 +82,9 @@ def promedio_estudiante(codigo: str):
     return {"codigo": codigo, "promedio": promedio}
 
 
-@router.get("/promedio/materia/{codigo}")
+@router.get("/promedio/materia/{codigo}", responses={
+    404: {"description": "Materia no encontrada"}
+})
 def promedio_materia(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_materias():
