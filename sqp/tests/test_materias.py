@@ -65,14 +65,14 @@ class TestListarMaterias:
 
     def test_listar_materias_vacio(self):
         response = client.get("/materias/")
-        assert response.status_code == 200
+        assert response.status_code == 204
         assert response.json() == []
 
     def test_listar_materias_con_datos(self):
         client.post("/materias/", json={"codigo": "CS101", "nombre": "Calidad", "creditos": 3})
         client.post("/materias/", json={"codigo": "CS102", "nombre": "Redes", "creditos": 4})
         response = client.get("/materias/")
-        assert response.status_code == 200
+        assert response.status_code == 204
         assert len(response.json()) == 2
 
 
@@ -81,7 +81,7 @@ class TestEliminarMateria:
     def test_eliminar_materia_existente(self):
         client.post("/materias/", json={"codigo": "CS101", "nombre": "Calidad", "creditos": 3})
         response = client.delete("/materias/CS101")
-        assert response.status_code == 200
+        assert response.status_code == 204
         assert client.get("/materias/CS101").status_code == 404
 
     def test_eliminar_materia_inexistente(self):
