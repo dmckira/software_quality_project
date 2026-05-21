@@ -13,8 +13,8 @@ from src.services.academic_service import (
     calcular_promedio_estudiante, calcular_promedio_materia,
     reporte_academico, estadisticas_globales, es_aprobado
 )
-
-_ERR_ESTUDIANTE = "Estudiante no encontrado"    
+_ERR_ESTUDIANTE = "Estudiante no encontrado"
+_ERR_MATERIA = "Materia no encontrada"
 
 router = APIRouter(prefix="/notas", tags=["Notas"])
 
@@ -31,7 +31,7 @@ def registrar_nota(nota: NotaCreate):
         raise HTTPException(status_code=404, detail=_ERR_ESTUDIANTE)
 
     if codigo_m not in get_materias():
-        raise HTTPException(status_code=404, detail="Materia no encontrada")
+        raise HTTPException(status_code=404, detail=_ERR_MATERIA)
 
     # [DEUDA MEDIA] Magic numbers 0.0 y 5.0 como límites
     if not (0.0 <= nota.valor <= 5.0):
@@ -67,7 +67,7 @@ def notas_de_estudiante(codigo: str):
 def notas_de_materia(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_materias():
-        raise HTTPException(status_code=404, detail="Materia no encontrada")
+        raise HTTPException(status_code=404, detail=_ERR_MATERIA)
     notas = [n for n in get_notas() if n["codigo_materia"] == codigo]
     return notas
 
@@ -90,7 +90,7 @@ def promedio_estudiante(codigo: str):
 def promedio_materia(codigo: str):
     codigo = codigo.upper()
     if codigo not in get_materias():
-        raise HTTPException(status_code=404, detail="Materia no encontrada")
+        raise HTTPException(status_code=404, detail=_ERR_MATERIA)
     # [DEUDA ALTA] Sin manejo de ZeroDivisionError si no hay notas
     promedio = calcular_promedio_materia(codigo)
     return {"codigo": codigo, "promedio": promedio}

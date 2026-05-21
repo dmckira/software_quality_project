@@ -38,7 +38,9 @@ def listar_materias():
     return list(get_materias().values())
 
 
-@router.get("/{codigo}", response_model=MateriaResponse)
+@router.get("/{codigo}", response_model=MateriaResponse, responses={
+    404: {"description": "Materia no encontrada"}
+})
 def obtener_materia(codigo: str):
     db = get_materias()
     codigo = codigo.upper()
@@ -47,7 +49,9 @@ def obtener_materia(codigo: str):
     return db[codigo]
 
 
-@router.delete("/{codigo}", status_code=204)
+@router.delete("/{codigo}", status_code=204, responses={
+    404: {"description": "Materia no encontrada"}
+})
 def eliminar_materia(codigo: str):
     db = get_materias()
     codigo = codigo.upper()
